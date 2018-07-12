@@ -19,7 +19,7 @@ function hasPermission(roles, permissionRoles) {
 const whiteList = ['/login', '/authredirect']// no redirect whitelist
 
 let data = Cookies.get('userMenu')
-if (data){
+if (data && data!="null"){
   //这里是防止用户手动刷新页面，整个app要重新加载,动态新增的路由，会消失，所以我们重新add一次
   let routers = []
   MenuUtils(routers, JSON.parse(data))

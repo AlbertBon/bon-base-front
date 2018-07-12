@@ -34,9 +34,23 @@ export const constantRouterMap = [
     children: [
       {
         path: 'home',
-        name: '主页',
+        name: '主页1',
         component: _import('/dashboard/index'),
         meta: {title: '主页', icon: 'fa fa-home'}
+      }
+    ]
+  },
+  {
+    path: '',
+    component: Layout,
+    name: '系统表',
+    redirect: 'sys',
+    children: [
+      {
+        path: 'sys',
+        name: '系统表列表',
+        component: _import('/sys/index'),
+        meta: {title: '系统表', icon: 'fa fa-table'}
       }
     ]
   },

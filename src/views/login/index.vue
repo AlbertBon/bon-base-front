@@ -113,10 +113,10 @@
 
                 _this.$store.commit('SET_TOKEN', data.data.token);
                 _this.$store.commit('SET_NAME', data.data.name);
-
+                console.log('获取菜单---')
                 Cookies.set('userMenu', data.data.routers)
                 MenuUtils(routers, data.data.routers)
-                console.log('获取菜单---')
+
                 console.log(routers)
                 this.$store.dispatch('InitMenuRouter', routers)
                 this.$router.addRoutes(this.$store.state.app.menuRouterMap)
