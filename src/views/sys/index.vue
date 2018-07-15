@@ -15,6 +15,9 @@
       <el-button class="filter-item" @click="addTable" style="margin-left: 10px;" type="primary" icon="el-icon-circle-plus-outline">
         新增表
       </el-button>
+      <el-button class="filter-item" @click="deleteTable" style="margin-left: 10px;" type="danger" icon="el-icon-remove">
+        删除表
+      </el-button>
     </div>
 
     <div class="cur-table_info">
@@ -28,8 +31,9 @@
 
     <div class="filter-container" v-show="saveParams.tableName!=''">
       <el-button type="primary" size="mini" @click="addField()">新增一行</el-button>
-      <el-button type="primary" size="mini" @click="saveTable()">保存</el-button>
-      <el-button type="primary" size="mini" @click="createTable()">创建数据库表</el-button>
+      <el-button type="primary" size="mini" @click="saveTable()">保存表数据</el-button>
+      <el-button type="primary" size="mini" @click="generateTable()">创建数据库表</el-button>
+      <el-button type="danger" size="mini" @click="dropTable()">销毁数据库表</el-button>
     </div>
 
     <el-table :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit
@@ -94,7 +98,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="danger" size="mini" @click="deleteField(scope.$index, list)">删除</el-button>
+          <el-button type="danger" size="mini" @click="deleteField(scope.$index, list,scope.row)">删除</el-button>
         </template>
       </el-table-column>
 
@@ -116,12 +120,17 @@
         list: [],
         listLoading: false,
 
+        //基础表表参数
         saveParams: {
           tableName: '',
           tableRemark: '',
           fieldList: []
         },
-        createParams:{},
+        deleteParams:{},
+        //数据库操作参数
+        generateParams:{},
+        dropParams:{},
+
         rules: {
           fieldName: [{required: true, message: '请输入字段名', trigger: 'blur'}],
           fieldType: [{required: true, message: '请输入字段类型', trigger: 'blur'}],
@@ -159,9 +168,10 @@
       getList() {
         let _this = this;
         _this.listLoading = true;
+        _this.isNewTable = false;
         _this.postRequest('/sys/listByTableName', _this.listParams).then(res => {
-          _this.listLoading = false;
-          if (res.data.code == '00') {
+            _this.listLoading = false;
+          if(res.data.code = '00') {
             _this.list = res.data.data;
             if (_this.list.length > 0) {
               _this.saveParams.tableName = res.data.data[0].tableName;
@@ -173,8 +183,44 @@
       addField() {
         this.list.push({isNull: '1'});
       },
-      deleteField(index, rows) {
-        rows.splice(index, 1);
+      deleteField(index, rows , curObj) {
+        if(curObj.sysBaseId != null && curObj.sysBaseId != undefined){
+          this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.deleteParams.sysBaseId = curObj.sysBaseId;
+            this.postRequest('/sys/deleteField', this.deleteParams).then(res => {
+              if(res.data.code = '00') {
+                this.$message({type: 'success', message: '删除成功!'});
+                rows.splice(index, 1);
+                this.listTables();
+              }
+            })
+          }).catch(() => {
+            this.$message({type: 'info',message: '已取消删除'});
+          });
+        }else{
+          rows.splice(index, 1);
+        }
+      },
+      deleteTable(){
+        this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.deleteParams.tableName = this.listParams.tableName;
+          this.postRequest('/sys/deleteTable', this.deleteParams).then(res => {
+            if(res.data.code = '00'){
+              this.$message({type: 'success', message: '删除成功!'});
+              this.listTables();
+            }
+          })
+        }).catch(() => {
+          this.$message({type: 'info',message: '已取消删除'});
+        });
       },
       //保存数据
       saveTable() {
@@ -188,21 +234,41 @@
         this.saveParams.fieldList = this.list;
         this.postRequest('/sys/saveTable', this.saveParams).then(res => {
           this.listLoading = false;
-          if (res.data.code == '00') {
+          if(res.data.code = '00') {
             this.$message.success('保存成功');
+            this.listTables();
           }
         })
       },
       //根据系统表创建数据库表
-      createTable(){
-        this.createParams.tableName = this.saveParams.tableName;
-        this.createParams.tableRemark = this.saveParams.tableRemark;
-        this.postRequest('/sys/createTable', this.createParams).then(res => {
+      generateTable(){
+        this.generateParams.tableName = this.saveParams.tableName;
+        this.generateParams.tableRemark = this.saveParams.tableRemark;
+        this.postRequest('/sys/generateTable', this.generateParams).then(res => {
           this.listLoading = false;
-          if (res.data.code == '00') {
-            this.$message.success('保存成功');
+          if(res.data.code = '00') {
+            this.$message.success('表创建成功');
           }
         })
+      },
+      dropTable(){
+        this.$confirm('此操作将销毁表中数据，是否继续？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          center:true,
+          type: 'warning'
+        }).then(() => {
+          this.dropParams.tableName = curObj.sysBaseId;
+          this.postRequest('/sys/dropTable', this.deleteParams).then(res => {
+            if(res.data.code = '00') {
+              this.$message({type: 'success', message: '删除成功!'});
+              rows.splice(index, 1);
+              this.listTables();
+            }
+          })
+        }).catch(() => {
+          this.$message({type: 'info',message: '已取消删除'});
+        });
       },
       //新增表
       addTable(){

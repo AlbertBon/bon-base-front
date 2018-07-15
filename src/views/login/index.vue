@@ -114,6 +114,11 @@
                 _this.$store.commit('SET_TOKEN', data.data.token);
                 _this.$store.commit('SET_NAME', data.data.name);
                 console.log('获取菜单---')
+
+                if (!Array.isArray(data.data.routers)) {
+                  console.log('注意：菜单不是一个数组形式，自动设置为空数组[]')
+                  data.data.routers = [];
+                }
                 Cookies.set('userMenu', data.data.routers)
                 MenuUtils(routers, data.data.routers)
 

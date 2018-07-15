@@ -41,13 +41,13 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '',
+    path: '/sys',
     component: Layout,
     name: '系统表',
-    redirect: 'sys',
+    redirect: 'index',
     children: [
       {
-        path: 'sys',
+        path: 'index',
         name: '系统表列表',
         component: _import('/sys/index'),
         meta: {title: '系统表', icon: 'fa fa-table'}
