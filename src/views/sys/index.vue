@@ -188,6 +188,7 @@
           this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
+            center:true,
             type: 'warning'
           }).then(() => {
             this.deleteParams.sysBaseId = curObj.sysBaseId;
@@ -206,10 +207,11 @@
         }
       },
       deleteTable(){
-        this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+        this.$confirm('此操作将表字段数据并且销毁表, 是否继续?', '警告', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-          type: 'warning'
+          center:true,
+          type: 'error'
         }).then(() => {
           this.deleteParams.tableName = this.listParams.tableName;
           this.postRequest('/sys/deleteTable', this.deleteParams).then(res => {
@@ -252,14 +254,14 @@
         })
       },
       dropTable(){
-        this.$confirm('此操作将销毁表中数据，是否继续？', '提示', {
+        this.$confirm('此操作将销毁表中数据，是否继续？', '警告', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           center:true,
-          type: 'warning'
+          type: 'error'
         }).then(() => {
-          this.dropParams.tableName = curObj.sysBaseId;
-          this.postRequest('/sys/dropTable', this.deleteParams).then(res => {
+          this.dropParams.tableName = this.listParams.tableName;
+          this.postRequest('/sys/dropTable', this.dropParams).then(res => {
             if(res.data.code = '00') {
               this.$message({type: 'success', message: '删除成功!'});
               rows.splice(index, 1);
