@@ -30,7 +30,7 @@ axios.interceptors.response.use(response => {
       store.commit('REMOVE_TOKEN')
       router.push({path: '/login'});
     }
-    return false;
+    return response;
   }else{
     return response;
   }

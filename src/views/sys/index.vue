@@ -135,6 +135,7 @@
           fieldName: [{required: true, message: '请输入字段名', trigger: 'blur'}],
           fieldType: [{required: true, message: '请输入字段类型', trigger: 'blur'}],
         },
+        //字段类型
         fieldTypeList: [
           {value: 'BIGINT', name: 'BIGINT'},
           {value: 'INT', name: 'INT'},

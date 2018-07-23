@@ -125,7 +125,6 @@
                 console.log(routers)
                 this.$store.dispatch('InitMenuRouter', routers)
                 this.$router.addRoutes(this.$store.state.app.menuRouterMap)
-                this.$router.addRoutes(this.$store.state.app.menuRouterMap)
 
                 _this.$router.push({path: '/'});
               }
