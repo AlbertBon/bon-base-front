@@ -153,7 +153,7 @@
     },
     created() {
       this.listTables();
-      this.getList();
+      // this.getList();
     },
     methods: {
       listTables() {
@@ -172,8 +172,15 @@
         _this.isNewTable = false;
         _this.postRequest('/sys/listByTableName', _this.listParams).then(res => {
             _this.listLoading = false;
-          if(res.data.code = '00') {
+          if(res.data.code == '00') {
             _this.list = res.data.data;
+            let str = JSON.stringify(_this.list);
+            _this.list = JSON.parse(str,function (key, value) {
+              if(value == 0 || value == 1){
+                return value.toString();
+              }
+              return value;
+            });
             if (_this.list.length > 0) {
               _this.saveParams.tableName = res.data.data[0].tableName;
               _this.saveParams.tableRemark = res.data.data[0].tableRemark;

@@ -64,11 +64,11 @@
           <el-input v-model="roleParams.roleFlag"></el-input>
         </el-form-item>
         <el-form-item label="菜单权限" prop="menuIds" >
-          <el-select v-model="roleParams.menuIds" filterable
+          <el-select v-model="roleParams.permissionIds" filterable
                      remote reserve-keyword  multiple placeholder="请选择" disabled>
-            <el-option v-for="item in menuList" :key="item.key" :label="item.label" :value="item.key">
+            <el-option v-for="item in permissionList" :key="item.key" :label="item.label" :value="item.key">
             </el-option>
-          </el-select><el-button type="primary" @click="handleMenu">选择</el-button>
+          </el-select><el-button type="primary" @click="handlePermission">选择</el-button>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -79,11 +79,11 @@
     </el-dialog>
 
 
-    <el-dialog title="菜单选择" :visible.sync="dialogMenuVisible">
-      <el-transfer v-model="menuIds" :data="menuList"></el-transfer>
+    <el-dialog title="菜单选择" :visible.sync="dialogPermissionVisible">
+      <el-transfer v-model="permissionIds" :data="permissionList"></el-transfer>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogMenuVisible = false">取消</el-button>
-        <el-button @click="checkMenu">确定</el-button>
+        <el-button @click="dialogPermissionVisible = false">取消</el-button>
+        <el-button @click="checkPermission">确定</el-button>
       </div>
     </el-dialog>
 
@@ -111,22 +111,22 @@
           list: []
         },
         dialogFormVisible: false,
-        dialogMenuVisible: false,
+        dialogPermissionVisible: false,
         dialogTitle: '',
         roleParams: {
-          menuIds:[],
+          permissionIds:[],
         },
         rules:{
           roleName:[{required:true,message:'请输入角色名',trigger:'blur'}],
           roleFlag:[{required:true,message:'请输入角色标识',trigger:'blur'}],
         },
-        menuList:[],
-        menuIds:[]
+        permissionList:[],
+        permissionIds:[]
       }
     },
     created() {
       this.getList()
-      this.getAllMenu()
+      this.getAllPermission()
     },
     methods: {
       getList() {
@@ -139,22 +139,22 @@
           }
         })
       },
-      getAllMenu(){
-        this.getRequest('/menu/getAllMenu').then(res=>{
+      getAllPermission(){
+        this.getRequest('/menu/getAllPermission').then(res=>{
           if(res.data.code=='00'){
             let resList= res.data.data
             for(let i=0;i<resList.length;i++){
-              this.menuList.push({
-                key:resList[i].menuId,
-                label:resList[i].name,
+              this.permissionList.push({
+                key:resList[i].permissionId,
+                label:resList[i].permissionName,
               })
             }
           }
         })
       },
-      checkMenu(){
-        this.dialogMenuVisible = false;
-        this.roleParams.menuIds = this.menuIds;
+      checkPermission(){
+        this.dialogPermissionVisible = false;
+        this.roleParams.permissionIds = this.permissionIds;
       },
       handleSizeChange(size) {
         this.listParams.pageSize = size;
@@ -164,9 +164,9 @@
         this.listParams.pageNum = currentPage;
         this.getList();
       },
-      handleMenu(){
-        this.dialogMenuVisible = true;
-        this.menuIds = this.roleParams.menuIds;
+      handlePermission(){
+        this.dialogPermissionVisible = true;
+        this.permissionIds = this.roleParams.permissionIds;
       },
       handleCreate() {
         if (this.$refs['roleForm']!==undefined) {
@@ -193,6 +193,9 @@
         this.getRequest('/role/getRole?key='+roleId).then(res => {
           if (res.data.code == '00') {
             this.roleParams = res.data.data;
+            if(this.roleParams.permissionIds == null){
+              this.roleParams.permissionIds = [];
+            }
           }
         })
       },

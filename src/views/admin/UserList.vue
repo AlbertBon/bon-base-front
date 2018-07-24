@@ -133,7 +133,8 @@
         }
       }
       var validateRoleIds = (rule,value,callback)=>{
-        if(this.userParams.roleIds.length<=0){
+        if(this.userParams.roleIds==null||this.userParams.roleIds.length<=0){
+
           return callback(new Error('请选择角色'))
         }else {
           return callback()
@@ -153,8 +154,7 @@
         },
         dialogFormVisible: false,
         dialogTitle: '',
-        userParams: {
-        },
+        userParams: {},
         rules:{
           username:[{required:true,message:'请输入用户名',trigger:'blur'}],
           password:[{validator:validatePassword,trigger:'blur'}],
@@ -167,7 +167,7 @@
       };
     },
     created() {
-      console.log('x')
+      console.log('userList')
       this.getList();
       this.getRoleList();
     },
@@ -226,6 +226,10 @@
         this.getRequest('/user/getUser?key='+userId).then(res => {
           if (res.data.code == '00') {
             this.userParams = res.data.data;
+            //防止roleIds为空
+            if(this.userParams.roleIds == null){
+              this.userParams.roleIds = [];
+            }
           }
         })
       },

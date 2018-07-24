@@ -71,8 +71,14 @@
         <el-form-item v-show="false" prop="menuId">
           <el-input v-model="menuParams.menuId"></el-input>
         </el-form-item>
+        <el-form-item v-show="menuParams.parentName" label="父菜单" prop="parentName">
+          <el-input v-model="menuParams.parentName" :disabled="true"></el-input>
+        </el-form-item>
         <el-form-item :rules="{required:true,message:'名称不能为空',trigger:'blur'}" label="名称" prop="name">
           <el-input v-model="menuParams.name"></el-input>
+        </el-form-item>
+        <el-form-item :rules="{required:true,message:'权限标识不能为空',trigger:'blur'}" label="权限标识" prop="permissionFlag">
+          <el-input v-model="menuParams.permissionFlag"></el-input>
         </el-form-item>
         <el-form-item label="链接地址" prop="path">
           <el-input v-model="menuParams.path"></el-input>
