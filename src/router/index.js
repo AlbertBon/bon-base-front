@@ -67,9 +67,9 @@ export const constantRouterMap = [
   //       meta: {title: '菜单管理', icon: 'fa fa-bars'}
   //     },
   //     {
-  //       path: 'baseTable',
+  //       path: 'sysTable',
   //       name: '系统表管理',
-  //       component: _import('/sys/index'),
+  //       component: _import('/admin/SysTable'),
   //       meta: {title: '系统表', icon: 'fa fa-table'}
   //     }
   //   ]
