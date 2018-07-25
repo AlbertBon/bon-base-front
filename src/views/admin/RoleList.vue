@@ -6,7 +6,8 @@
       <el-button class="filter-item" @click="getList" style="margin-left: 10px;" type="primary" icon="el-icon-search">
         搜索
       </el-button>
-      <el-button @click="handleCreate" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit">
+      <el-button @click="handleCreate" class="filter-item" style="margin-left: 10px;" type="primary"
+                 icon="el-icon-edit">
         新增
       </el-button>
     </div>
@@ -60,16 +61,17 @@
         <el-form-item label="角色名" prop="roleName">
           <el-input v-model="roleParams.roleName"></el-input>
         </el-form-item>
-        <el-form-item label="标识" prop="roleFlag" >
+        <el-form-item label="标识" prop="roleFlag">
           <el-input v-model="roleParams.roleFlag"></el-input>
         </el-form-item>
-        <el-form-item label="菜单权限" prop="menuIds" >
-          <el-select v-model="roleParams.permissionIds" filterable
-                     remote reserve-keyword  multiple placeholder="请选择" disabled>
-            <el-option v-for="item in permissionList" :key="item.key" :label="item.label" :value="item.key">
-            </el-option>
-          </el-select><el-button type="primary" @click="handlePermission">选择</el-button>
-        </el-form-item>
+        <div style="padding-bottom: 20px;font-size: 14px;font-weight: 700">权限选择</div>
+        <el-tree
+          :data="permissionList"
+          show-checkbox
+          ref="permissionTree"
+          node-key="permissionId"
+          :props="{children: 'children',label: 'permissionName'}">
+        </el-tree>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
@@ -79,22 +81,16 @@
     </el-dialog>
 
 
-    <el-dialog title="菜单选择" :visible.sync="dialogPermissionVisible">
-      <el-transfer v-model="permissionIds" :data="permissionList"></el-transfer>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogPermissionVisible = false">取消</el-button>
-        <el-button @click="checkPermission">确定</el-button>
-      </div>
-    </el-dialog>
-
   </div>
 </template>
 
 <script>
   import Pagination from '@/components/Pagination'
+  import ElHeader from "element-ui/packages/header/src/main";
 
   export default {
     components: {
+      ElHeader,
       Pagination
     },
     data() {
@@ -103,25 +99,22 @@
         listParams: {
           pageSize: 2,
           pageNum: 1,
-          keyMap:{},
-          orderBy:''
+          keyMap: {},
+          orderBy: ''
         },
         pageSizes: [2, 5, 10, 20],
         pageInfo: {
           list: []
         },
         dialogFormVisible: false,
-        dialogPermissionVisible: false,
         dialogTitle: '',
-        roleParams: {
-          permissionIds:[],
+        roleParams: {},
+        rules: {
+          roleName: [{required: true, message: '请输入角色名', trigger: 'blur'}],
+          roleFlag: [{required: true, message: '请输入角色标识', trigger: 'blur'}],
         },
-        rules:{
-          roleName:[{required:true,message:'请输入角色名',trigger:'blur'}],
-          roleFlag:[{required:true,message:'请输入角色标识',trigger:'blur'}],
-        },
-        permissionList:[],
-        permissionIds:[]
+        permissionList: [],
+        permissionIds: []
       }
     },
     created() {
@@ -139,21 +132,14 @@
           }
         })
       },
-      getAllPermission(){
-        this.getRequest('/menu/getAllPermission').then(res=>{
-          if(res.data.code=='00'){
-            let resList= res.data.data
-            for(let i=0;i<resList.length;i++){
-              this.permissionList.push({
-                key:resList[i].permissionId,
-                label:resList[i].permissionName,
-              })
-            }
+      getAllPermission() {
+        this.getRequest('/menu/getAllPermissionTree').then(res => {
+          if (res.data.code == '00') {
+            this.permissionList = res.data.data;
           }
         })
       },
-      checkPermission(){
-        this.dialogPermissionVisible = false;
+      checkPermission() {
         this.roleParams.permissionIds = this.permissionIds;
       },
       handleSizeChange(size) {
@@ -164,12 +150,12 @@
         this.listParams.pageNum = currentPage;
         this.getList();
       },
-      handlePermission(){
-        this.dialogPermissionVisible = true;
-        this.permissionIds = this.roleParams.permissionIds;
+      getPermissionTree(){
+        console.log(this.$refs.permissionTree.getCheckedKeys());
+        console.log(this.$refs.permissionTree.getHalfCheckedKeys());
       },
       handleCreate() {
-        if (this.$refs['roleForm']!==undefined) {
+        if (this.$refs['roleForm'] !== undefined) {
           this.$refs['roleForm'].resetFields();
         }
         this.dialogFormVisible = true;
@@ -185,21 +171,26 @@
         })
       },
       handleUpdate(roleId) {
-        if (this.$refs['roleForm']!==undefined) {
+        if (this.$refs['roleForm'] !== undefined) {
           this.$refs['roleForm'].resetFields();
         }
         this.dialogFormVisible = true;
         this.dialogTitle = '修改角色';
-        this.getRequest('/role/getRole?key='+roleId).then(res => {
+        this.getRequest('/role/getRole?key=' + roleId).then(res => {
           if (res.data.code == '00') {
             this.roleParams = res.data.data;
-            if(this.roleParams.permissionIds == null){
+            if (this.roleParams.permissionIds == undefined) {
               this.roleParams.permissionIds = [];
             }
+            this.$refs.permissionTree.setCheckedKeys(this.roleParams.permissionIds)
           }
         })
       },
-      updateRole(){
+      updateRole() {
+        //拼接半选中值和选中值并传给角色表单
+        let halfCheckedIds = this.$refs.permissionTree.getHalfCheckedKeys()
+        let checkedIds = this.$refs.permissionTree.getCheckedKeys()
+        this.roleParams.permissionIds = halfCheckedIds.concat(checkedIds);
         this.postRequest('/role/updateRole', this.roleParams).then(res => {
           if (res.data.code == '00') {
             this.$message.success('修改成功');
@@ -214,7 +205,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.getRequest('/role/deleteRole?key='+roleId).then(res => {
+          this.getRequest('/role/deleteRole?key=' + roleId).then(res => {
             if (res.data.code == '00') {
               this.$message.success('删除成功');
               this.getList();
