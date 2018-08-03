@@ -119,10 +119,11 @@
                   console.log('注意：菜单不是一个数组形式，自动设置为空数组[]')
                   data.data.routers = [];
                 }
+                console.log(data.data.routers)
                 Cookies.set('userMenu', data.data.routers)
                 MenuUtils(routers, data.data.routers)
 
-                console.log(routers)
+
                 this.$store.dispatch('InitMenuRouter', routers)
                 this.$router.addRoutes(this.$store.state.app.menuRouterMap)
 

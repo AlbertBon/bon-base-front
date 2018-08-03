@@ -55,25 +55,6 @@ router.beforeEach((to, from, next) => {
       NProgress.done()
     }
   }
-
-  // if (getToken()) { // determine if there has token
-  //   /* has token*/
-  //   if (to.path === '/login') {
-  //     console.log(router.options.routers)
-  //     window.location.href = '/'
-  //     console.log(router.options.routers)
-  //     NProgress.done() // if current page is dashboard will not trigger	afterEach hook, so manually handle it
-  //   }
-  //   next();
-  // } else {
-  //   /* has no token*/
-  //   if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
-  //     next()
-  //   } else {
-  //     next('/login') // 否则全部重定向到登录页
-  //     NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
-  //   }
-  // }
 })
 
 router.afterEach(() => {
