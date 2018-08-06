@@ -133,7 +133,7 @@
         })
       },
       getAllPermission() {
-        this.getRequest('/menu/getAllPermissionTree').then(res => {
+        this.getRequest('/user/getAllPermissionTree').then(res => {
           if (res.data.code == '00') {
             this.permissionList = res.data.data;
           }
