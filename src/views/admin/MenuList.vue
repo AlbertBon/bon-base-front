@@ -66,13 +66,13 @@
       @handleCurrentChange="handleCurrentChange"></pagination>
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-      <el-form ref="menuForm" :rules="rules" :model="menuParams" label-position="left" label-width="70px"
+      <el-form ref="menuForm" :model="menuParams" label-position="left" label-width="70px"
                style='width: 400px; margin-left:50px;'>
         <el-form-item v-show="false" prop="menuId">
           <el-input v-model="menuParams.menuId"></el-input>
         </el-form-item>
         <el-form-item v-show="menuParams.parentName" label="父菜单" prop="parentName">
-          <el-input v-model="menuParams.parentName" :disabled="true"></el-input>
+          <el-input v-model="menuParams.parentName" :disabled="true" ></el-input>
         </el-form-item>
         <el-form-item :rules="{required:true,message:'名称不能为空',trigger:'blur'}" label="名称" prop="name">
           <el-input v-model="menuParams.name"></el-input>
@@ -143,18 +143,11 @@
         dialogTitle: '',
         menuParams: {
         },
-        rules:{
-          username:[{required:true,message:'请输入菜单名',trigger:'blur'}],
-          phone:[{pattern:/^1(3|4|5|7|8)\d{9}$/,message:'请输入正确手机号码',trigger:'blur'}],
-          roleIds:[{validator:validateRoleIds,trigger:'change'}],
-        },
-        roleList:[]
       };
     },
     created() {
       console.log('x')
       this.getList();
-      this.getRoleList();
     },
     methods: {
       getList() {
@@ -164,13 +157,6 @@
           _this.listLoading = false;
           if (res.data.code == '00') {
             this.pageInfo = res.data.data;
-          }
-        })
-      },
-      getRoleList(){
-        this.getRequest('/role/getAllRole').then(res => {
-          if (res.data.code == '00') {
-            this.roleList = res.data.data;
           }
         })
       },
