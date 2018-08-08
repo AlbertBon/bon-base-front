@@ -101,8 +101,8 @@
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form ref="permissionForm" :rules="permissionRules" :model="permissionParams" label-position="left" label-width="80px"
                style='width: 500px; margin-left:50px;'>
-        <el-form-item  label="权限类型" prop="type">
-          <el-select v-model="permissionParams.type" placeholder="请选择">
+        <el-form-item  label="权限类型" prop="type" >
+          <el-select v-model="permissionParams.type" :disabled="isCheckType" placeholder="请选择">
             <el-option value="00">菜单</el-option>
             <el-option value="01">其他</el-option>
           </el-select>
@@ -112,9 +112,9 @@
         </el-form-item>
         <!--菜单 start-->
         <template  v-if="permissionParams.type=='00'">
-          <el-form-item label="父菜单" prop="parentName">
-            <el-input v-model="permissionParams.parentName" :disabled="true"></el-input>
-          </el-form-item>
+          <!--<el-form-item label="父菜单" prop="parentName">-->
+            <!--<el-input v-model="permissionParams.parentName" :disabled="true"></el-input>-->
+          <!--</el-form-item>-->
           <el-form-item label="名称" prop="name">
             <el-input v-model="permissionParams.name"></el-input>
           </el-form-item>
@@ -177,6 +177,7 @@
         permissionParams:{},
         dialogFormVisible:false,
         dialogTitle:'',
+        isCheckType:false,
 
         permissionRules: {
           name: [{required:true,message:'名称不能为空',trigger:'blur'}],
@@ -225,6 +226,7 @@
           this.$refs['permissionForm'].resetFields();
         }
         this.dialogFormVisible = true;
+        this.isCheckType = false;
         this.dialogTitle = '新增权限';
       },
       //新增子权限
@@ -234,6 +236,7 @@
         }
         this.permissionParams.objectId = data.objectId;
         this.permissionParams.type = data.type;
+        this.isCheckType = true;
         this.dialogFormVisible = true;
         this.dialogTitle = '新增子权限';
       },
@@ -245,6 +248,7 @@
         this.permissionParams = this.permissionInfo;
         this.permissionParams.objectId = data.objectId;
         this.permissionParams.type = data.type;
+        this.isCheckType = true;
         this.dialogFormVisible = true;
         this.dialogTitle = '修改菜单';
 
@@ -256,10 +260,10 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.getRequest('/menu/deleteMenu?key=' + menuId).then(res => {
+          this.getRequest('/permission/deletePermission?key=' + data.permissionId).then(res => {
             if (res.data.code == '00') {
               this.$message.success('删除成功');
-              this.getList();
+              this.getAllPermission();
             }
           })
         }).catch(() => {
@@ -293,21 +297,6 @@
             })
           }
         }))
-      },
-
-      append(data) {
-        const newChild = {id: id++, label: 'testtest', children: []};
-        if (!data.children) {
-          this.$set(data, 'children', []);
-        }
-        data.children.push(newChild);
-      },
-
-      remove(node, data) {
-        const parent = node.parent;
-        const children = parent.data.children || parent.data;
-        const index = children.findIndex(d => d.id === data.id);
-        children.splice(index, 1);
       },
 
     }
