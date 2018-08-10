@@ -128,6 +128,8 @@
                 this.$router.addRoutes(this.$store.state.app.menuRouterMap)
 
                 _this.$router.push({path: '/'});
+              }else {
+                _this.refreshCode();
               }
             }).catch(() => {
               this.loading = false

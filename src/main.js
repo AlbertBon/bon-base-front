@@ -21,10 +21,10 @@ import router from './router'
 import store from './store'
 import './permission' // permission control
 
-import {getRequest} from './utils/api'
-import {postRequest} from './utils/api'
+import {getRequest,uploadFileRequest,postRequest} from './utils/api'
 Vue.prototype.postRequest = postRequest;
 Vue.prototype.getRequest = getRequest;
+Vue.prototype.uploadRequest = uploadFileRequest;
 
 import 'font-awesome/css/font-awesome.css'//导入字体图标
 

@@ -7,6 +7,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+// import '@/utils/canvas-nest'
 
 export default {
   name: 'dashboard',
