@@ -256,10 +256,10 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.getRequest('/menu/deleteMenu?key=' + menuId).then(res => {
+          this.getRequest('/permission/deletePermission?key=' + data.permissionId).then(res => {
             if (res.data.code == '00') {
               this.$message.success('删除成功');
-              this.getList();
+              this.getAllPermission();
             }
           })
         }).catch(() => {
