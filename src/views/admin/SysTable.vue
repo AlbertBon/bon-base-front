@@ -21,12 +21,16 @@
     </div>
 
     <div class="cur-table_info">
+      <div class="cur-table_desc">所属模块：
+        <el-input v-model="saveParams.modules"  style="width:300px;"></el-input>
+      </div>
       <div class="cur-table_title">表名：
         <el-input v-model="saveParams.tableName" :disabled="!isNewTable" style="width:300px;"></el-input>
       </div>
       <div class="cur-table_desc">表备注：
         <el-input v-model="saveParams.tableRemark" style="width:300px;"></el-input>
       </div>
+
     </div>
 
     <div class="filter-container" v-show="saveParams.tableName!=''">
@@ -184,6 +188,7 @@
             if (_this.list.length > 0) {
               _this.saveParams.tableName = res.data.data[0].tableName;
               _this.saveParams.tableRemark = res.data.data[0].tableRemark;
+              _this.saveParams.modules = res.data.data[0].modules;
             }
           }
         })

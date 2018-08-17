@@ -68,7 +68,7 @@
       @handleCurrentChange="handleCurrentChange"></pagination>
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-      <el-form ref="userForm" :rules="rules" :model="userParams" label-position="left" label-width="70px"
+      <el-form ref="userForm" :rules="rules" :model="userParams" label-position="left" label-width="100px"
                style='width: 400px; margin-left:50px;'>
         <el-form-item v-show="false" prop="userId">
           <el-input v-model="userParams.userId"></el-input>
@@ -91,6 +91,12 @@
             <el-option v-for="item in roleList" :key="item.roleId" :label="item.roleName" :value="item.roleId">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="是否是管理员" prop="isAdmin">
+          <el-radio-group v-model="userParams.isAdmin">
+            <el-radio label="1">是</el-radio>
+            <el-radio label="0">否</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="电话" prop="phone">
           <el-input v-model="userParams.phone"></el-input>
@@ -154,7 +160,9 @@
         },
         dialogFormVisible: false,
         dialogTitle: '',
-        userParams: {},
+        userParams: {
+          isAdmin:'0'
+        },
         rules:{
           username:[{required:true,message:'请输入用户名',trigger:'blur'}],
           password:[{validator:validatePassword,trigger:'blur'}],
@@ -162,6 +170,7 @@
           name:[{required:true,message:'请输入姓名',trigger:'blur'}],
           phone:[{pattern:/^1(3|4|5|7|8)\d{9}$/,message:'请输入正确手机号码',trigger:'blur'}],
           roleIds:[{validator:validateRoleIds,trigger:'change'}],
+          isAdmin:[{required:true,message:'请选择是否为管理员',trigger:'blur'}]
         },
         roleList:[]
       };
@@ -230,6 +239,7 @@
             if(this.userParams.roleIds == null){
               this.userParams.roleIds = [];
             }
+            this.userParams.isAdmin = res.data.data.isAdmin.toString()
           }
         })
       },
