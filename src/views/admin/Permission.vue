@@ -224,6 +224,7 @@
         if (this.$refs['permissionForm'] !== undefined) {
           this.$refs['permissionForm'].resetFields();
         }
+        this.permissionParams.objectId = null;
         this.dialogFormVisible = true;
         this.dialogTitle = '新增权限';
       },

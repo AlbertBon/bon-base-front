@@ -4,7 +4,7 @@
       <el-select v-model="listParams.tableName" class="filter-item" filterable placeholder="请选择">
         <el-option
           v-for="item in tableList"
-          :key="item.sysBaseId"
+          :key="item.baseId"
           :label="item.tableName"
           :value="item.tableName">
         </el-option>
@@ -197,18 +197,17 @@
         this.list.push({isNull: '1'});
       },
       deleteField(index, rows , curObj) {
-        if(curObj.sysBaseId != null && curObj.sysBaseId != undefined){
+        if(curObj.baseId != null && curObj.baseId != undefined){
           this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             center:true,
             type: 'warning'
           }).then(() => {
-            this.deleteParams.sysBaseId = curObj.sysBaseId;
+            this.deleteParams.baseId = curObj.baseId;
             this.postRequest('/sys/deleteField', this.deleteParams).then(res => {
               if(res.data.code = '00') {
                 this.$message({type: 'success', message: '删除成功!'});
-                rows.splice(index, 1);
                 this.listTables();
               }
             })

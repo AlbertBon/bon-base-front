@@ -162,6 +162,10 @@
         this.dialogTitle = '新增角色';
       },
       createRole() {
+        //拼接半选中值和选中值并传给角色表单
+        let halfCheckedIds = this.$refs.permissionTree.getHalfCheckedKeys()
+        let checkedIds = this.$refs.permissionTree.getCheckedKeys()
+        this.roleParams.permissionIds = halfCheckedIds.concat(checkedIds);
         this.postRequest('/role/saveRole', this.roleParams).then(res => {
           if (res.data.code == '00') {
             this.$message.success('新增成功');
