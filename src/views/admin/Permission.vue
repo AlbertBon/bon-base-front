@@ -43,55 +43,77 @@
 
         <el-col :span="16" v-show="permissionInfoVisible">
           <div class="bon-detail">
-            <div class="bon-detail_content" >
-              <label>菜单名称:</label>
-              <div class="bon-detail_text">
-                <span>{{permissionInfo.name}}</span>
+            <template v-if="permissionInfo.permissionType == '00'">
+              <div class="bon-detail_content" >
+                <label>菜单名称:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.menu.name}}</span>
+                </div>
               </div>
-            </div>
-            <div class="bon-detail_content" >
-              <label>权限标识:</label>
-              <div class="bon-detail_text">
-                <span>{{permissionInfo.permissionFlag}}</span>
+              <div class="bon-detail_content" >
+                <label>权限标识:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.permissionFlag}}</span>
+                </div>
               </div>
-            </div>
-            <div class="bon-detail_content" >
-              <label>链接地址:</label>
-              <div class="bon-detail_text">
-                <span>{{permissionInfo.path}}</span>
+              <div class="bon-detail_content" >
+                <label>链接地址:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.menu.path}}</span>
+                </div>
               </div>
-            </div>
-            <div class="bon-detail_content" >
-              <label>文件路径:</label>
-              <div class="bon-detail_text">
-                <span>{{permissionInfo.component}}</span>
+              <div class="bon-detail_content" >
+                <label>文件路径:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.menu.component}}</span>
+                </div>
               </div>
-            </div>
-            <div class="bon-detail_content" >
-              <label>标题:</label>
-              <div class="bon-detail_text">
-                <span>{{permissionInfo.title}}</span>
+              <div class="bon-detail_content" >
+                <label>标题:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.menu.title}}</span>
+                </div>
               </div>
-            </div>
-            <div class="bon-detail_content" >
-              <label>图标:</label>
-              <div class="bon-detail_text">
-                <span>{{permissionInfo.icon}}</span>
+              <div class="bon-detail_content" >
+                <label>图标:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.menu.icon}}</span>
+                </div>
               </div>
-            </div>
-            <div class="bon-detail_content" >
-              <label>跳转地址:</label>
-              <div class="bon-detail_text">
-                <span>{{permissionInfo.redirect}}</span>
+              <div class="bon-detail_content" >
+                <label>跳转地址:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.menu.redirect}}</span>
+                </div>
               </div>
-            </div>
-            <div class="bon-detail_content" >
-              <label>是否隐藏:</label>
-              <div class="bon-detail_text">
-                <span>{{permissionInfo.hidden}}</span>
+              <div class="bon-detail_content" >
+                <label>是否隐藏:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.menu.hidden}}</span>
+                </div>
               </div>
-            </div>
+            </template>
+            <template v-else-if="permissionInfo.permissionType == '01'">
+              <div class="bon-detail_content" >
+                <label>接口名称:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.url.urlName}}</span>
+                </div>
+              </div>
+              <div class="bon-detail_content" >
+                <label>url地址:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.url.urlPath}}</span>
+                </div>
+              </div>
+              <div class="bon-detail_content" >
+                <label>接口说明:</label>
+                <div class="bon-detail_text">
+                  <span>{{permissionInfo.url.urlRemark}}</span>
+                </div>
+              </div>
 
+            </template>
           </div>
 
         </el-col>
@@ -101,10 +123,14 @@
     <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
       <el-form ref="permissionForm" :rules="permissionRules" :model="permissionParams" label-position="left" label-width="80px"
                style='width: 500px; margin-left:50px;'>
-        <el-form-item  label="权限类型" prop="type">
-          <el-select v-model="permissionParams.type" placeholder="请选择">
-            <el-option value="00">菜单</el-option>
-            <el-option value="01">其他</el-option>
+        <el-form-item  label="权限类型">
+          <el-select v-model="permissionParams['type']" placeholder="请选择">
+            <el-option
+              v-for="item in permissionType"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="权限标识" prop="permissionFlag">
@@ -112,35 +138,45 @@
         </el-form-item>
         <!--菜单 start-->
         <template  v-if="permissionParams.type=='00'">
-          <el-form-item label="父菜单" prop="parentName">
-            <el-input v-model="permissionParams.parentName" :disabled="true"></el-input>
+          <el-form-item label="名称" prop="menu.name" :rules="[{required:true,message:'名称不能为空',trigger:'blur'}]">
+            <el-input v-model="permissionParams.menu.name"></el-input>
           </el-form-item>
-          <el-form-item label="名称" prop="name">
-            <el-input v-model="permissionParams.name"></el-input>
+          <el-form-item label="链接地址" prop="menu.path">
+            <el-input v-model="permissionParams.menu.path" placeholder="如：role/list"></el-input>
           </el-form-item>
-          <el-form-item label="链接地址" prop=".path">
-            <el-input v-model="permissionParams.path" placeholder="如：role/list"></el-input>
+          <el-form-item label="文件路径" prop="menu.component">
+            <el-input v-model="permissionParams.menu.component" placeholder="如：/admin/RoleList"></el-input>
           </el-form-item>
-          <el-form-item label="文件路径" prop="component">
-            <el-input v-model="permissionParams.component" placeholder="如：/admin/RoleList"></el-input>
+          <el-form-item label="标题" prop="menu.title">
+            <el-input v-model="permissionParams.menu.title" ></el-input>
           </el-form-item>
-          <el-form-item label="标题" prop="title">
-            <el-input v-model="permissionParams.title" ></el-input>
+          <el-form-item label="图标" prop="menu.icon">
+            <el-input v-model="permissionParams.menu.icon" placeholder="如：fa fa-user-circle-o"></el-input>
           </el-form-item>
-          <el-form-item label="图标" prop="icon">
-            <el-input v-model="permissionParams.icon" placeholder="如：fa fa-user-circle-o"></el-input>
+          <el-form-item label="跳转地址" prop="menu.redirect">
+            <el-input v-model="permissionParams.menu.redirect" placeholder="如：admin/user/list"></el-input>
           </el-form-item>
-          <el-form-item label="跳转地址" prop="redirect">
-            <el-input v-model="permissionParams.redirect" placeholder="如：admin/user/list"></el-input>
-          </el-form-item>
-          <el-form-item label="是否隐藏" prop="hidden">
-            <el-select v-model="permissionParams.hidden" placeholder="请选择">
+          <el-form-item label="是否隐藏" prop="menu.hidden">
+            <el-select v-model="permissionParams.menu.hidden" placeholder="请选择">
               <el-option label="是" value="00"></el-option>
               <el-option label="否" value="01"></el-option>
             </el-select>
           </el-form-item>
         </template>
         <!--菜单 end-->
+        <!--接口url start-->
+        <template  v-if="permissionParams.type=='01'">
+          <el-form-item label="名称" prop="url.urlName" :rules="[{required:true,message:'名称不能为空',trigger:'blur'}]">
+            <el-input v-model="permissionParams.url.urlName"></el-input>
+          </el-form-item>
+          <el-form-item label="url地址" prop="url.urlPath">
+            <el-input v-model="permissionParams.url.urlPath" placeholder=""></el-input>
+          </el-form-item>
+          <el-form-item label="注释" prop="url.urlRemark">
+            <el-input v-model="permissionParams.url.urlRemark" placeholder=""></el-input>
+          </el-form-item>
+        </template>
+        <!--接口url end-->
         <div style="text-align: center;">
           <el-button @click="dialogFormVisible = false">取消</el-button>
           <el-button v-if="dialogTitle=='新增权限'||dialogTitle=='新增子权限'" type="primary" @click="createMenu">新增</el-button>
@@ -165,21 +201,33 @@
           label: 'permissionName',
           children: 'children'
         },
-        permissionType:'',
+        permissionType:[{
+          value: '00',
+          label: '菜单'
+        }, {
+          value: '01',
+          label: '接口url'
+        }, {
+          value: '99',
+          label: '其他'
+        }],
 
         //展示部分
-        permissionInfo:{},
+        permissionInfo:{
+          menu:{},
+          url:{}
+        },
         permissionInfoVisible:false,
 
-        permissionParams: {
+        permissionParams:{
+          menu:{},
+          url:{}
         },
 
-        permissionParams:{},
         dialogFormVisible:false,
         dialogTitle:'',
 
         permissionRules: {
-          name: [{required:true,message:'名称不能为空',trigger:'blur'}],
           permissionFlag: [{required:true,message:'权限标识不能为空',trigger:'blur'}],
         },
       }
@@ -219,12 +267,19 @@
           }
         })
       },
+      //初始化参数
+      initPermissionParams(){
+        this.permissionParams = {
+          menu:{},
+          url:{}
+        }
+      },
       // 新增权限
       handleCreate() {
         if (this.$refs['permissionForm'] !== undefined) {
           this.$refs['permissionForm'].resetFields();
         }
-        this.permissionParams.objectId = null;
+        this.initPermissionParams()
         this.dialogFormVisible = true;
         this.dialogTitle = '新增权限';
       },
@@ -233,6 +288,7 @@
         if (this.$refs['permissionForm'] !== undefined) {
           this.$refs['permissionForm'].resetFields();
         }
+        this.initPermissionParams()
         this.permissionParams.objectId = data.objectId;
         this.permissionParams.type = data.type;
         this.dialogFormVisible = true;
@@ -243,6 +299,7 @@
         if (this.$refs['permissionForm'] !== undefined) {
           this.$refs['permissionForm'].resetFields();
         }
+        this.initPermissionParams()
         this.permissionParams = this.permissionInfo;
         this.permissionParams.objectId = data.objectId;
         this.permissionParams.type = data.type;
