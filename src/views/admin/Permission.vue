@@ -289,7 +289,8 @@
           this.$refs['permissionForm'].resetFields();
         }
         this.initPermissionParams()
-        this.permissionParams.objectId = data.objectId;
+        //设置父id值
+        this.permissionParams.parentId = data.permissionId;
         this.permissionParams.type = data.type;
         this.dialogFormVisible = true;
         this.dialogTitle = '新增子权限';
