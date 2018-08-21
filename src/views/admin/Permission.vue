@@ -43,17 +43,17 @@
 
         <el-col :span="16" v-show="permissionInfoVisible">
           <div class="bon-detail">
+            <div class="bon-detail_content" >
+              <label>权限标识:</label>
+              <div class="bon-detail_text">
+                <span>{{permissionInfo.permissionFlag}}</span>
+              </div>
+            </div>
             <template v-if="permissionInfo.permissionType == '00'">
               <div class="bon-detail_content" >
                 <label>菜单名称:</label>
                 <div class="bon-detail_text">
                   <span>{{permissionInfo.menu.name}}</span>
-                </div>
-              </div>
-              <div class="bon-detail_content" >
-                <label>权限标识:</label>
-                <div class="bon-detail_text">
-                  <span>{{permissionInfo.permissionFlag}}</span>
                 </div>
               </div>
               <div class="bon-detail_content" >
