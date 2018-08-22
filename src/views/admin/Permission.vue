@@ -4,6 +4,9 @@
       <el-button @click="handleCreate" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit">
         新增权限
       </el-button>
+      <el-button @click="handleAddVue" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-plus">
+        新增vue视图
+      </el-button>
     </div>
 
     <div class="custom-tree-container">
@@ -185,6 +188,22 @@
       </el-form>
     </el-dialog>
 
+    <el-dialog title="新增vue视图" :visible.sync="dialogVueFormVisible">
+      <el-form ref="genVueForm" :rules="genVueRules" :model="genVueParams" label-position="left" label-width="80px"
+               style='width: 500px; margin-left:50px;'>
+        <el-form-item label="模块名称" prop="modules" :rules="[{required:true,message:'模块名称不能为空',trigger:'blur'}]" >
+          <el-input v-model="genVueParams.modules" placeholder="模块名称"></el-input>
+        </el-form-item>
+        <el-form-item label="表名" prop="tableName" :rules="{required:true,message:'表名不能为空',trigger:'blur'}">
+          <el-input v-model="genVueParams.tableName"  placeholder="请填写驼峰形式，如：sysUser或SysUser"></el-input>
+        </el-form-item>
+      </el-form>
+      <div style="text-align: center;">
+        <el-button @click="dialogVueFormVisible = false">取消</el-button>
+        <el-button  type="primary" @click="createVueMenu">新增</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 
 
@@ -223,13 +242,20 @@
           menu:{},
           url:{}
         },
+        permissionRules: {
+          permissionFlag: [{required:true,message:'权限标识不能为空',trigger:'blur'}],
+        },
 
         dialogFormVisible:false,
         dialogTitle:'',
 
-        permissionRules: {
-          permissionFlag: [{required:true,message:'权限标识不能为空',trigger:'blur'}],
-        },
+        //vue视图部分
+        dialogVueFormVisible:false,
+        genVueParams:{},
+        genVueRules:{
+
+        }
+
       }
     },
     created() {
@@ -367,6 +393,25 @@
         const children = parent.data.children || parent.data;
         const index = children.findIndex(d => d.id === data.id);
         children.splice(index, 1);
+      },
+      //新增菜单视图部分（请前端人员新生成视图文件，并将视图文件加入前端项目后再使用）
+      handleAddVue(){
+        if (this.$refs['genVueForm'] !== undefined) {
+          this.$refs['genVueForm'].resetFields();
+        }
+        this.dialogVueFormVisible = true;
+      },
+      createVueMenu(){
+        this.$refs['genVueForm'].validate((valid => {
+          if (valid) {
+            this.getRequest('/permission/generateVueMenu?tableName='+this.genVueParams.tableName+'&modules='+this.genVueParams.modules).then(res => {
+              if (res.data.code == '00') {
+                this.dialogVueFormVisible = false;
+                this.$message.success('新增成功，请重新登录获取新菜单');
+              }
+            })
+          }
+        }))
       },
 
     }
