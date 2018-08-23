@@ -136,10 +136,11 @@
           <span>上传excel生成sql语句</span>
         </div>
         <upload-excel-component :do-upload='generateViewSQL' btn-text="上传excel" :before-upload="beforeUploadExcel"></upload-excel-component>
-        <!--<div style="text-align: center;">-->
-          <!--<el-button @click="dialogUtilFormVisible = false">取消</el-button>-->
-          <!--<el-button type="primary" @click="generateViewSQL">新增</el-button>-->
-        <!--</div>-->
+        <div style="text-align: center;">
+          <el-button @click="dialogUtilFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="generateViewSQL1">新增</el-button>
+          <a :href="url">123</a>
+        </div>
       </el-card>
 
     </el-dialog>
@@ -150,12 +151,15 @@
 
 <script>
   import UploadExcelComponent from '@/components/UploadExcel/index.vue'
+  let base = process.env.BASE_API;
   export default {
     name: "sys",
     components: { UploadExcelComponent },
     data() {
       return {
         file:'',
+        url:base+'/sys/downloadXLS',
+
         tableList: [],
         listParams: {
           tableName: ''
@@ -378,6 +382,9 @@
         })
 
 
+      },
+      generateViewSQL1(){
+        this.getRequest('/sys/generateSQLByXLS').then();
       }
 
     }

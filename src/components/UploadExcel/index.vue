@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import XLSX from 'xlsx'
 
 export default {
   props: {
@@ -32,7 +31,8 @@ export default {
         this.$message.error('只支持单个文件上传!')
         return
       }
-      const rawFile = files[0] // only use files[0]
+      //只用第一个文件
+      const rawFile = files[0]
 
       if (!this.isExcel(rawFile)) {
         this.$message.error('只支持.xlsx, .xls, .csv文件')
@@ -54,33 +54,23 @@ export default {
       this.$emit("handleUploadExcel");
     },
     handleClick(e) {
+      //只用第一个文件
       const files = e.target.files
-      const rawFile = files[0] // only use files[0]
+      const rawFile = files[0]
       if (!rawFile) return
       this.upload(rawFile)
     },
     upload(rawFile) {
+      //修复不能选择同一个文件
       this.$refs['excel-upload-input'].value = null // fix can't select the same excel
-
+      //如果没有上传前判断方法，则直接进入上传文件流程
       if (!this.beforeUpload) {
-        console.log('x')
         this.doUpload(rawFile)
         return
       }
       const before = this.beforeUpload(rawFile)
       if (before) {
-        console.log('y')
         this.doUpload(rawFile)
-        // axios.post('http://localhost:8080/sys/generateSQLByXLS', rawFile)
-        //   .then(function (response) {
-        //     alert(response.data);
-        //     console.log(response);
-        //   })
-        //   .catch(function (error) {
-        //     alert("上传失败");
-        //     console.log(error);
-        //     window.location.reload();
-        //   });
       }
     },
     isExcel(file) {
