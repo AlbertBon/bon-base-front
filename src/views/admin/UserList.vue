@@ -223,6 +223,8 @@
                 this.getList();
               }
             })
+          } else {
+            this.$message.error('请输入正确的信息');
           }
         }))
       },
@@ -253,6 +255,8 @@
                 this.getList();
               }
             })
+          } else {
+            this.$message.error('请输入正确的信息');
           }
         }))
       },

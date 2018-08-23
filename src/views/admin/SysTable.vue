@@ -12,25 +12,39 @@
       <el-button class="filter-item" @click="getList" style="margin-left: 10px;" type="primary" icon="el-icon-search">
         搜索
       </el-button>
-      <el-button class="filter-item" @click="addTable" style="margin-left: 10px;" type="primary" icon="el-icon-circle-plus-outline">
+      <el-button class="filter-item" @click="handleAddTable" style="margin-left: 10px;" type="primary" icon="el-icon-circle-plus-outline">
         新增表
       </el-button>
       <el-button class="filter-item" @click="deleteTable" style="margin-left: 10px;" type="danger" icon="el-icon-remove">
         删除表
       </el-button>
+      <el-button class="filter-item" @click="handleSysUtil" style="margin-left: 10px;" type="primary" icon="el-icon-setting">
+        系统工具
+      </el-button>
     </div>
 
     <div class="cur-table_info">
-      <div class="cur-table_desc">所属模块：
-        <el-input v-model="saveParams.modules"  style="width:300px;"></el-input>
-      </div>
-      <div class="cur-table_title">表名：
-        <el-input v-model="saveParams.tableName" :disabled="!isNewTable" style="width:300px;"></el-input>
-      </div>
-      <div class="cur-table_desc">表备注：
-        <el-input v-model="saveParams.tableRemark" style="width:300px;"></el-input>
-      </div>
-
+      <el-form ref="saveForm" :model="saveParams" :rules="saveRules" label-position="left" label-width="80px"
+               style='width: 500px;'>
+        <el-form-item label="所属模块" prop="modules" :rules="[{required:true,message:'模块名称不能为空',trigger:'blur'}]" >
+          <el-input v-model="saveParams.modules" style="width:300px;"></el-input>
+        </el-form-item>
+        <el-form-item label="表名" prop="tableName" :rules="[{required:true,message:'表名不能为空',trigger:'blur'}]" >
+          <el-input v-model="saveParams.tableName" :disabled="!isNewTable" style="width:300px;"></el-input>
+        </el-form-item>
+        <el-form-item label="表备注" prop="tableRemark" >
+          <el-input v-model="saveParams.tableRemark" style="width:300px;"></el-input>
+        </el-form-item>
+        <!--<div class="cur-table_desc">所属模块：-->
+          <!--<el-input v-model="saveParams.modules" style="width:300px;"></el-input>-->
+        <!--</div>-->
+        <!--<div class="cur-table_title">表名：-->
+          <!--<el-input v-model="saveParams.tableName" :disabled="!isNewTable" style="width:300px;"></el-input>-->
+        <!--</div>-->
+        <!--<div class="cur-table_desc">表备注：-->
+          <!--<el-input v-model="saveParams.tableRemark" style="width:300px;"></el-input>-->
+        <!--</div>-->
+      </el-form>
     </div>
 
     <div class="filter-container" v-show="saveParams.tableName!=''">
@@ -105,16 +119,43 @@
           <el-button type="danger" size="mini" @click="deleteField(scope.$index, list,scope.row)">删除</el-button>
         </template>
       </el-table-column>
-
     </el-table>
+
+    <el-dialog title="系统操作工具" :visible.sync="dialogUtilFormVisible">
+      <!--<el-form ref="genVueForm" :rules="genVueRules" :model="genVueParams" label-position="left" label-width="80px"-->
+               <!--style='width: 500px; margin-left:50px;'>-->
+        <!--<el-form-item label="模块名称" prop="modules" :rules="[{required:true,message:'模块名称不能为空',trigger:'blur'}]" >-->
+          <!--<el-input v-model="genVueParams.modules" placeholder="模块名称"></el-input>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item label="表名" prop="tableName" :rules="{required:true,message:'表名不能为空',trigger:'blur'}">-->
+          <!--<el-input v-model="genVueParams.tableName"  placeholder="请填写驼峰形式，如：sysUser或SysUser"></el-input>-->
+        <!--</el-form-item>-->
+      <!--</el-form>-->
+      <el-card>
+        <div slot="header" class="clearfix">
+          <span>上传excel生成sql语句</span>
+        </div>
+        <upload-excel-component :do-upload='generateViewSQL' btn-text="上传excel" :before-upload="beforeUploadExcel"></upload-excel-component>
+        <!--<div style="text-align: center;">-->
+          <!--<el-button @click="dialogUtilFormVisible = false">取消</el-button>-->
+          <!--<el-button type="primary" @click="generateViewSQL">新增</el-button>-->
+        <!--</div>-->
+      </el-card>
+
+    </el-dialog>
+
+
   </div>
 </template>
 
 <script>
+  import UploadExcelComponent from '@/components/UploadExcel/index.vue'
   export default {
     name: "sys",
+    components: { UploadExcelComponent },
     data() {
       return {
+        file:'',
         tableList: [],
         listParams: {
           tableName: ''
@@ -130,6 +171,7 @@
           tableRemark: '',
           fieldList: []
         },
+        saveRules:{},
         deleteParams:{},
         //数据库操作参数
         generateParams:{},
@@ -139,6 +181,11 @@
           fieldName: [{required: true, message: '请输入字段名', trigger: 'blur'}],
           fieldType: [{required: true, message: '请输入字段类型', trigger: 'blur'}],
         },
+
+        //系统工具界面
+        dialogUtilFormVisible:false,
+        tableData: [],
+        tableHeader: [],
         //字段类型
         fieldTypeList: [
           {value: 'BIGINT', name: 'BIGINT'},
@@ -160,6 +207,7 @@
       // this.getList();
     },
     methods: {
+      //获取所有系统基础表中的表名
       listTables() {
         let _this = this;
         _this.listLoading = true;
@@ -170,6 +218,7 @@
           }
         })
       },
+      //根据表名获取系统基础表中表数据
       getList() {
         let _this = this;
         _this.listLoading = true;
@@ -193,9 +242,63 @@
           }
         })
       },
+      //新增表触发
+      handleAddTable(){
+        this.saveParams.tableName = '';
+        this.saveParams.tableRemark = '';
+        this.saveParams.modules = '';
+        this.list = [];
+        this.listParams.tableName = null;
+        this.isNewTable = true;
+      },
+      //保存数据
+      saveTable() {
+        this.$refs['saveForm'].validate((valid => {
+          if (valid) {
+            this.saveParams.fieldList = this.list;
+            this.postRequest('/sys/saveTable', this.saveParams).then(res => {
+              this.listLoading = false;
+              if(res.data.code == '00') {
+                this.$message.success('保存成功');
+                this.listTables();
+                // this.getList();
+              }
+            })
+          } else {
+            // this.$alert("请输入正确的信息","输入信息错误",{
+            //   confirmButtonText: '确定',
+            //   type:'error'
+            // })
+            this.$message.error('请输入正确的信息');
+          }
+        }))
+
+      },
+      //删除表并销毁表
+      deleteTable(){
+        this.$confirm('此操作将删除表字段数据并且销毁表在数据库中数据, 是否继续?', '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          center:true,
+          type: 'error'
+        }).then(() => {
+          this.deleteParams.tableName = this.listParams.tableName;
+          this.postRequest('/sys/deleteTable', this.deleteParams).then(res => {
+            if(res.data.code == '00'){
+              this.$message({type: 'success', message: '删除成功!'});
+              this.listTables();
+              this.listParams.tableName = '';
+            }
+          })
+        }).catch(() => {
+          this.$message({type: 'info',message: '已取消删除'});
+        });
+      },
+      //新增一行字段
       addField() {
         this.list.push({isNull: '1'});
       },
+      //删除一行字段
       deleteField(index, rows , curObj) {
         if(curObj.baseId != null && curObj.baseId != undefined){
           this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
@@ -206,7 +309,7 @@
           }).then(() => {
             this.deleteParams.baseId = curObj.baseId;
             this.postRequest('/sys/deleteField', this.deleteParams).then(res => {
-              if(res.data.code = '00') {
+              if(res.data.code == '00') {
                 this.$message({type: 'success', message: '删除成功!'});
                 this.listTables();
               }
@@ -218,53 +321,18 @@
           rows.splice(index, 1);
         }
       },
-      deleteTable(){
-        this.$confirm('此操作将表字段数据并且销毁表, 是否继续?', '警告', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          center:true,
-          type: 'error'
-        }).then(() => {
-          this.deleteParams.tableName = this.listParams.tableName;
-          this.postRequest('/sys/deleteTable', this.deleteParams).then(res => {
-            if(res.data.code = '00'){
-              this.$message({type: 'success', message: '删除成功!'});
-              this.listTables();
-            }
-          })
-        }).catch(() => {
-          this.$message({type: 'info',message: '已取消删除'});
-        });
-      },
-      //保存数据
-      saveTable() {
-        // this.$refs['saveForm'].validate((valid => {
-        //   if (valid) {
-        //     console.log("dui")
-        //   } else {
-        //     console.log("cuo")
-        //   }
-        // }))
-        this.saveParams.fieldList = this.list;
-        this.postRequest('/sys/saveTable', this.saveParams).then(res => {
-          this.listLoading = false;
-          if(res.data.code = '00') {
-            this.$message.success('保存成功');
-            this.listTables();
-          }
-        })
-      },
-      //根据系统表创建数据库表
+      //根据该表信息在数据库中创建表
       generateTable(){
         this.generateParams.tableName = this.saveParams.tableName;
         this.generateParams.tableRemark = this.saveParams.tableRemark;
         this.postRequest('/sys/generateTable', this.generateParams).then(res => {
           this.listLoading = false;
-          if(res.data.code = '00') {
+          if(res.data.code == '00') {
             this.$message.success('表创建成功');
           }
         })
       },
+      //销毁数据库中表数据
       dropTable(){
         this.$confirm('此操作将销毁表中数据，是否继续？', '警告', {
           confirmButtonText: '确定',
@@ -274,9 +342,8 @@
         }).then(() => {
           this.dropParams.tableName = this.listParams.tableName;
           this.postRequest('/sys/dropTable', this.dropParams).then(res => {
-            if(res.data.code = '00') {
+            if(res.data.code == '00') {
               this.$message({type: 'success', message: '删除成功!'});
-              rows.splice(index, 1);
               this.listTables();
             }
           })
@@ -284,13 +351,33 @@
           this.$message({type: 'info',message: '已取消删除'});
         });
       },
-      //新增表
-      addTable(){
-        this.saveParams.tableName = '';
-        this.saveParams.tableRemark = '';
-        this.list = [];
-        this.listParams.tableName = null;
-        this.isNewTable = true;
+      //系统工具
+      handleSysUtil(){
+        this.dialogUtilFormVisible = true;
+      },
+      //excel组件引用方法
+      beforeUploadExcel(file) {
+        const isLt1M = file.size / 1024 / 1024 < 1
+        if (isLt1M) {
+          return true
+        }
+        this.$message({
+          message: '请不要输入超过1M的文件.',
+          type: 'warning'
+        })
+        return false
+      },
+      generateViewSQL(file) {
+        //需要将文件添加到formData类中
+        let formData = new FormData();
+        formData.append("file", file);
+        this.uploadRequest('/sys/generateSQLByXLS',formData).then(res => {
+          if(res.data.code == '00') {
+            this.$message.success('sql语句生成成功');
+          }
+        })
+
+
       }
 
     }

@@ -62,7 +62,7 @@ export const uploadFileRequest = (url, params) => {
     url: `${base}${url}`,
     data: params,
     headers: {
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryh8IBPWeXvcuhiqZn'
     }
   });
 }

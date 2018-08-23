@@ -162,17 +162,23 @@
         this.dialogTitle = '新增角色';
       },
       createRole() {
-        //拼接半选中值和选中值并传给角色表单
-        let halfCheckedIds = this.$refs.permissionTree.getHalfCheckedKeys()
-        let checkedIds = this.$refs.permissionTree.getCheckedKeys()
-        this.roleParams.permissionIds = halfCheckedIds.concat(checkedIds);
-        this.postRequest('/role/saveRole', this.roleParams).then(res => {
-          if (res.data.code == '00') {
-            this.$message.success('新增成功');
-            this.dialogFormVisible = false;
-            this.getList();
+        this.$refs['roleForm'].validate((valid => {
+          if (valid) {
+            //拼接半选中值和选中值并传给角色表单
+            let halfCheckedIds = this.$refs.permissionTree.getHalfCheckedKeys()
+            let checkedIds = this.$refs.permissionTree.getCheckedKeys()
+            this.roleParams.permissionIds = halfCheckedIds.concat(checkedIds);
+            this.postRequest('/role/saveRole', this.roleParams).then(res => {
+              if (res.data.code == '00') {
+                this.$message.success('新增成功');
+                this.dialogFormVisible = false;
+                this.getList();
+              }
+            })
+          } else {
+            this.$message.error('请输入正确的信息');
           }
-        })
+        }))
       },
       handleUpdate(roleId) {
         if (this.$refs['roleForm'] !== undefined) {
@@ -191,17 +197,23 @@
         })
       },
       updateRole() {
-        //拼接半选中值和选中值并传给角色表单
-        let halfCheckedIds = this.$refs.permissionTree.getHalfCheckedKeys()
-        let checkedIds = this.$refs.permissionTree.getCheckedKeys()
-        this.roleParams.permissionIds = halfCheckedIds.concat(checkedIds);
-        this.postRequest('/role/updateRole', this.roleParams).then(res => {
-          if (res.data.code == '00') {
-            this.$message.success('修改成功');
-            this.dialogFormVisible = false;
-            this.getList();
+        this.$refs['roleForm'].validate((valid => {
+          if (valid) {
+            //拼接半选中值和选中值并传给角色表单
+            let halfCheckedIds = this.$refs.permissionTree.getHalfCheckedKeys()
+            let checkedIds = this.$refs.permissionTree.getCheckedKeys()
+            this.roleParams.permissionIds = halfCheckedIds.concat(checkedIds);
+            this.postRequest('/role/updateRole', this.roleParams).then(res => {
+              if (res.data.code == '00') {
+                this.$message.success('修改成功');
+                this.dialogFormVisible = false;
+                this.getList();
+              }
+            })
+          } else {
+            this.$message.error('请输入正确的信息');
           }
-        })
+        }))
       },
       handleDel(roleId) {
         this.$confirm('是否删除该用户', '提示', {

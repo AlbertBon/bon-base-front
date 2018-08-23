@@ -135,8 +135,7 @@
               this.loading = false
             })
           } else {
-            console.log('error submit!!')
-            return false
+            this.$message.error('请输入正确的信息');
           }
         })
       },

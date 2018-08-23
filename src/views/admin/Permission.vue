@@ -362,6 +362,8 @@
                 this.getAllPermission();
               }
             })
+          } else {
+            this.$message.error('请输入正确的信息');
           }
         }))
       },
@@ -376,6 +378,8 @@
                 this.getAllPermission();
               }
             })
+          } else {
+            this.$message.error('请输入正确的信息');
           }
         }))
       },
@@ -410,6 +414,8 @@
                 this.$message.success('新增成功，请重新登录获取新菜单');
               }
             })
+          } else {
+            this.$message.error('请输入正确的信息');
           }
         }))
       },

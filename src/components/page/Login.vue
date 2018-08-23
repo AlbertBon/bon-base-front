@@ -44,8 +44,7 @@
                         localStorage.setItem('ms_username',self.ruleForm.username);
                         self.$router.push('/home');
                     } else {
-                        console.log('error submit!!');
-                        return false;
+                      this.$message.error('请输入正确的信息');
                     }
                 });
             }
