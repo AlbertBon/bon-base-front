@@ -127,7 +127,7 @@
       <el-form ref="permissionForm" :rules="permissionRules" :model="permissionParams" label-position="left" label-width="80px"
                style='width: 500px; margin-left:50px;'>
         <el-form-item  label="权限类型">
-          <el-select v-model="permissionParams['type']" placeholder="请选择">
+          <el-select v-model="permissionParams.type" placeholder="请选择">
             <el-option
               v-for="item in permissionType"
               :key="item.value"
@@ -161,8 +161,12 @@
           </el-form-item>
           <el-form-item label="是否隐藏" prop="menu.hidden">
             <el-select v-model="permissionParams.menu.hidden" placeholder="请选择">
-              <el-option label="是" value="00"></el-option>
-              <el-option label="否" value="01"></el-option>
+              <el-option
+                v-for="item in booleanType"
+                :key="index"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
             </el-select>
           </el-form-item>
         </template>
@@ -215,11 +219,13 @@
     data() {
       const data = [];
       return {
+        //权限树配置
         permissionList: [],
         permissionProps: {
           label: 'permissionName',
           children: 'children'
         },
+        //select类型定义
         permissionType:[{
           value: '00',
           label: '菜单'
@@ -230,6 +236,13 @@
           value: '99',
           label: '其他'
         }],
+        booleanType:[{
+          value: 1,
+          label: '是'
+        }, {
+          value: 0,
+          label: '否'
+        }],
 
         //展示部分
         permissionInfo:{
@@ -238,6 +251,7 @@
         },
         permissionInfoVisible:false,
 
+        //权限参数部分
         permissionParams:{
           menu:{},
           url:{}
@@ -245,7 +259,6 @@
         permissionRules: {
           permissionFlag: [{required:true,message:'权限标识不能为空',trigger:'blur'}],
         },
-
         dialogFormVisible:false,
         dialogTitle:'',
 
