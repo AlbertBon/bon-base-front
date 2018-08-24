@@ -52,3 +52,16 @@
   word-wrap: break-word;
 }
 
+.bon-one_line_hidden{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bon-code {
+  display: block;
+  background-color: #eef1f6;
+  height: 30px;
+  line-height: 30px;
+}
+

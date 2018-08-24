@@ -136,11 +136,18 @@
           <span>上传excel生成sql语句</span>
         </div>
         <upload-excel-component :do-upload='generateViewSQL' btn-text="上传excel" :before-upload="beforeUploadExcel"></upload-excel-component>
-        <div style="text-align: center;">
-          <el-button @click="dialogUtilFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="generateViewSQL1">新增</el-button>
-          <a :href="url">123</a>
+        <div>
+          <el-row :gutter="20" v-show="SQLView" style="margin-top: 15px;">
+            <el-col :span="20">
+              <span class="bon-one_line_hidden bon-code">sql语句：{{resultSQL}}</span>
+            </el-col>
+            <el-col :span="4">
+              <el-button type="primary" size="mini" icon="fa fa-clipboard" v-clipboard:copy='resultSQL' v-clipboard:success='clipboardSuccess'>复制到粘贴板</el-button>
+            </el-col>
+          </el-row>
         </div>
+
+          <!--<a :href="url">下载文件</a>-->
       </el-card>
 
     </el-dialog>
@@ -151,15 +158,18 @@
 
 <script>
   import UploadExcelComponent from '@/components/UploadExcel/index.vue'
+  import clipboard from '@/directive/clipboard/index.js' // v-directive 通过指令复制到粘贴板
   let base = process.env.BASE_API;
   export default {
     name: "sys",
-    components: { UploadExcelComponent },
+    components: {
+      UploadExcelComponent
+    },
+    directives: {
+      clipboard
+    },
     data() {
       return {
-        file:'',
-        url:base+'/sys/downloadXLS',
-
         tableList: [],
         listParams: {
           tableName: ''
@@ -188,8 +198,9 @@
 
         //系统工具界面
         dialogUtilFormVisible:false,
-        tableData: [],
-        tableHeader: [],
+        resultSQL:'',
+        SQLView:false,
+        url:base+'/sys/downloadXLS',
         //字段类型
         fieldTypeList: [
           {value: 'BIGINT', name: 'BIGINT'},
@@ -377,14 +388,18 @@
         formData.append("file", file);
         this.uploadRequest('/sys/generateSQLByXLS',formData).then(res => {
           if(res.data.code == '00') {
+            this.resultSQL = res.data.data;
+            this.SQLView = true;
             this.$message.success('sql语句生成成功');
           }
         })
-
-
       },
-      generateViewSQL1(){
-        this.getRequest('/sys/generateSQLByXLS').then();
+      clipboardSuccess() {
+        this.$message({
+          message: '复制成功',
+          type: 'success',
+          duration: 1500
+        })
       }
 
     }
