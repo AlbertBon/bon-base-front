@@ -112,7 +112,7 @@
               if (data.code == '00') {
 
                 _this.$store.commit('SET_TOKEN', data.data.token);
-                _this.$store.commit('SET_NAME', data.data.name);
+                _this.$store.commit('SET_USER_INFO', data.data);
                 console.log('获取菜单---')
 
                 if (!Array.isArray(data.data.routers)) {

@@ -57,6 +57,7 @@ export const postRequest = (url, params) => {
   });
 }
 export const uploadFileRequest = (url, params) => {
+  console.log(url)
   return axios({
     method: 'post',
     url: `${base}${url}`,
