@@ -21,16 +21,26 @@ import router from './router'
 import store from './store'
 import './permission' // permission control
 
+//request
 import {getRequest,uploadFileRequest,postRequest} from './utils/api'
 Vue.prototype.postRequest = postRequest;
 Vue.prototype.getRequest = getRequest;
 Vue.prototype.uploadRequest = uploadFileRequest;
 
-import 'font-awesome/css/font-awesome.css'//导入字体图标
+//导入字体图标
+import 'font-awesome/css/font-awesome.css'
 
 Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
+
+//weui相关
+import FastClick from 'fastclick'
+import weui from 'jquery-weui/dist/js/jquery-weui.min'
+import picker from 'jquery-weui/dist/js/city-picker.min'
+import 'jquery-weui/dist/css/jquery-weui.min.css' //weui global css
+import 'jquery-weui/dist/lib/weui.min.css' //weui global css
+
 
 /* eslint-disable no-new */
 new Vue({
@@ -40,3 +50,5 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
+
+FastClick.attach(document.body)

@@ -15,7 +15,10 @@ export function removeToken() {
 }
 
 export function getUser() {
-  return JSON.parse(Cookies.get('userInfo'))
+  if(Cookies.get('userInfo') != undefined){
+    return JSON.parse(Cookies.get('userInfo'))
+  }
+  return null;
 }
 
 export function setUser(token) {

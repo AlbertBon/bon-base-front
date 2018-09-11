@@ -32,6 +32,13 @@ if (data && data!="null"){
 router.beforeEach((to, from, next) => {
   NProgress.start(); // start progress bar
   console.log(to.path+'--'+from.path);
+  //微信端跳转
+  if(to.path === '/weLogin'){
+    next()
+    NProgress.done()
+    return false
+  }
+
   let data = Cookies.get('userMenu')
   if(data&&to.path === '/login'){
     //这里不使用router进行跳转，是因为，跳转到登录页面的时候，是需要重新登录，获取数据的，这个时候，会再次向router实例里面add路由规则，

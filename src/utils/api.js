@@ -26,7 +26,6 @@ axios.interceptors.response.use(response => {
     })
     if (data.code === '100007') {//登录信息过期
       store.commit('SET_TOKEN', '')
-      store.commit('SET_ROLES', [])
       store.commit('REMOVE_TOKEN')
       router.push({path: '/login'});
     }

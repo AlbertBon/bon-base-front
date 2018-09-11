@@ -41,6 +41,12 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/weLogin',
+    name: '微信端',
+    hidden: true,
+    component: _import('/weui/index'),
+  },
   // {
   //   path: '/admin',
   //   component: Layout,
@@ -77,7 +83,7 @@ export const constantRouterMap = [
 ]
 
 export default new Router({
-  // mode: 'history', //后端支持可开
+  mode: 'history', //后端支持可开
   scrollBehavior: () => ({y: 0}), /*滚动行为*/
   routes: constantRouterMap
 })
