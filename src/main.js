@@ -38,8 +38,11 @@ Vue.config.productionTip = false
 import FastClick from 'fastclick'
 import weui from 'jquery-weui/dist/js/jquery-weui.min'
 import picker from 'jquery-weui/dist/js/city-picker.min'
-import 'jquery-weui/dist/css/jquery-weui.min.css' //weui global css
-import 'jquery-weui/dist/lib/weui.min.css' //weui global css
+import 'jquery-weui/dist/css/jquery-weui.min.css'
+import 'jquery-weui/dist/lib/weui.min.css'
+
+//swiper相关
+import 'swiper/dist/css/swiper.css';
 
 
 /* eslint-disable no-new */

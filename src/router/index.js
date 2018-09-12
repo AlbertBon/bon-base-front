@@ -45,7 +45,7 @@ export const constantRouterMap = [
     path: '/weLogin',
     name: '微信端',
     hidden: true,
-    component: _import('/weui/index'),
+    component: _import('/weui/Home'),
   },
   // {
   //   path: '/admin',
