@@ -85,8 +85,8 @@ export default {
       let _this=this;
       this.postRequest('/login/loginOut').then(resp => {
         _this.$store.commit('REMOVE_TOKEN')
-        _this.$store.commit('REMOVE_USER')
-        _this.$router.push({path: '/login'});
+        _this.$store.commit('REMOVE_USER_INFO')
+        _this.$router.push({path: '/generatesql/login'});
       })
     },
     //切换展示

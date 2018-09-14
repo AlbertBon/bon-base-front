@@ -2,7 +2,7 @@
   <div class="login-container">
     <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm"
              label-position="left">
-      <h3 class="title">vue-element-admin</h3>
+      <h3 class="title">基础项目</h3>
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
           <i class="fa fa-user" aria-hidden="true"></i>
@@ -54,6 +54,7 @@
   import MenuUtils from '@/utils/MenuUtils'
   import Cookies from 'js-cookie'
 
+  const rootPath = process.env.ROOT_PATH.toString()
   var routers =[]
   export default {
     name: 'login',
@@ -119,15 +120,17 @@
                   console.log('注意：菜单不是一个数组形式，自动设置为空数组[]')
                   data.data.routers = [];
                 }
-                console.log(data.data.routers)
+
+                data.data.routers = this.generateMenu(data.data.routers)
                 Cookies.set('userMenu', data.data.routers)
                 MenuUtils(routers, data.data.routers)
+                console.log(routers)
 
 
                 this.$store.dispatch('InitMenuRouter', routers)
                 this.$router.addRoutes(this.$store.state.app.menuRouterMap)
 
-                _this.$router.push({path: '/'});
+                _this.$router.push({path: '/generatesql/'});
               }else {
                 _this.refreshCode();
               }
@@ -138,6 +141,15 @@
             this.$message.error('请输入正确的信息');
           }
         })
+      },
+      generateMenu(menu){
+        //对主路由进行加根目录操作
+        for(let i=0;i<menu.length;i++){
+          if(menu[i].path != undefined){
+            menu[i].path=rootPath+menu[i].path;
+          }
+        }
+        return menu;
       },
     }
   }

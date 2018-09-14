@@ -29,36 +29,37 @@ if (data && data!="null"){
   router.addRoutes(store.state.app.menuRouterMap)
 }
 
+const rootPath = process.env.ROOT_PATH.toString()
 router.beforeEach((to, from, next) => {
   NProgress.start(); // start progress bar
   console.log(to.path+'--'+from.path);
   //微信端跳转
-  if(to.path === '/weLogin'){
+  if(to.path === rootPath+'weLogin'){
     next()
     NProgress.done()
     return false
   }
 
   let data = Cookies.get('userMenu')
-  if(data&&to.path === '/login'){
+  if(data&&to.path === rootPath+'login'){
     //这里不使用router进行跳转，是因为，跳转到登录页面的时候，是需要重新登录，获取数据的，这个时候，会再次向router实例里面add路由规则，
     //而next()跳转过去之后，没有刷新页面，之前的规则还是存在的，但是使用location的话，可以刷新页面，当刷新页面的时候，整个app会重新加载
     //而我们在刷新之前已经把sessionStorage里的user移除了，所以上面的添加路由也不行执行
     Cookies.remove('userMenu')
-    window.location.href = '/'
+    window.location.href = rootPath
     NProgress.done()
     return false
   }
 
-  if (!data && to.path !== '/login') {
-    next({ path: '/login' })
+  if (!data && to.path !== rootPath+'login') {
+    next({ path: rootPath+'login' })
     NProgress.done()
   } else {
     if (to.path) {
       next()
       NProgress.done()
     } else {
-      next({ path: '/404' })
+      next({ path: rootPath+'404' })
       NProgress.done()
     }
   }
